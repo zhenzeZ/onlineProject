@@ -2,6 +2,7 @@
 
 Game::Game()
 {
+
 	windowHeight = 600;
 	windowWidth = 900;
 
@@ -12,11 +13,15 @@ Game::Game()
 
 	int random = rand() % 2;
 
+	MyServer = new Server(1111);
+
 	if (random == 0) {
+		isChaser = false;
 		m_playerDot = new Dot(true, m_player);
 		m_enemyDot = new Dot(false, m_enemy);
 	}
 	else {
+		isChaser = true;
 		m_playerDot = new Dot(false, m_player);
 		m_enemyDot = new Dot(true, m_enemy);
 	}
@@ -75,8 +80,12 @@ void Game::processEvents()
 			m_exitGame = true;
 			break;
 		case SDL_KEYDOWN:
-			m_playerDot->handleEvent(event);
-			m_enemyDot->handleEvent(event);
+			if (isChaser) {
+				m_enemyDot->handleEvent(event);
+			}
+			else {
+				m_playerDot->handleEvent(event);
+			}
 
 			if (event.key.keysym.sym == SDLK_ESCAPE)
 				m_exitGame = true;
@@ -87,8 +96,34 @@ void Game::processEvents()
 
 void Game::update()
 {
-	m_playerDot->move(windowHeight, windowWidth);
-	m_playerDot->move(windowHeight, windowWidth);
+	MyServer->ListenForNewConnection(isChaser);
+
+	if (isChaser)
+	{
+		m_playerDot->move(windowHeight, windowWidth);
+		string posData = m_playerDot->GetPosAsString();
+		MyServer->SendString(0, posData);
+		if (preMessage != MyServer->returnMessage()) {
+			preMessage = MyServer->returnMessage();
+			vector<int> temp = intConverter(preMessage);
+			if (temp.size() == 2) {
+				m_enemyDot->SetPosition(temp[0], temp[1]);
+			}
+		}
+	}
+	else {
+		m_enemyDot->move(windowHeight, windowWidth);
+		string posData = m_enemyDot->GetPosAsString();
+		MyServer->SendString(0, posData);
+		if (preMessage != MyServer->returnMessage()) {
+			preMessage = MyServer->returnMessage();
+			vector<int> temp = intConverter(preMessage);
+			if (temp.size() == 2) {
+				m_enemyDot->SetPosition(temp[0], temp[1]);
+			}
+		}
+	}
+
 }
 
 void Game::render()
@@ -107,4 +142,24 @@ void Game::render()
 
 	SDL_RenderPresent(m_renderer);
 
+}
+
+vector<int> Game::intConverter(string message) {
+	string::iterator end = std::remove_if(message.begin(), message.end(), notADigit);
+
+	string all_numbers(message.begin(), end);
+	std::cout << all_numbers;
+
+	stringstream ss(all_numbers);
+	vector<int> vec;
+	std::cout << std::endl;
+	std::cout << "Let's start next line" << std::endl;
+	int i;
+	for (; ss >> i;)
+	{
+		vec.push_back(i);
+		cout << i << endl;
+	}
+
+	return vec;
 }

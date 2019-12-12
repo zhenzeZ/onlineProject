@@ -1,8 +1,22 @@
 #pragma once
 #include "Dot.h"
 #include "LTexture.h"
+#include "Server.h"
+
+#include <algorithm>
+#include <string>
+#include <iostream>
+#include <vector>
+#include <sstream>
 
 using namespace std;
+
+struct not_digit {
+	bool operator()(const char c)
+	{
+		return c != ' ' && !isdigit(c);
+	}
+};
 
 class Game {
 public:
@@ -18,7 +32,15 @@ private:
 	void update();
 	void render();
 
+	not_digit notADigit;
+	vector<int> intConverter(string message);
+	string preMessage;
+
 	bool m_exitGame;
+
+	bool isChaser;
+
+	Server* MyServer; //Create server on port 100
 
 	SDL_Window* m_window;
 	SDL_Renderer* m_renderer;
