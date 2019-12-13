@@ -6,7 +6,7 @@ Server::Server(int PORT, bool BroadcastPublically) //Port = port to broadcast on
 	WSAData wsaData;
 	WORD DllVersion = MAKEWORD(2, 1);
 
-	getMessage = "";
+	getMessage = " ";
 
 	if (WSAStartup(DllVersion, &wsaData) != 0) //If WSAStartup returns anything other than 0, then that means an error has occured in the WinSock Startup.
 	{
@@ -17,7 +17,7 @@ Server::Server(int PORT, bool BroadcastPublically) //Port = port to broadcast on
 	if (BroadcastPublically) //If server is open to public
 		addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	else //If server is only for our router
-		addr.sin_addr.s_addr = inet_addr("192.168.0.129"); //Broadcast locally
+		addr.sin_addr.s_addr = inet_addr("149.153.106.159"); //Broadcast locally
 	addr.sin_port = htons(PORT); //Port
 	addr.sin_family = AF_INET; //IPv4 Socket
 
@@ -90,9 +90,9 @@ bool Server::ProcessPacket(int ID, Packet _packettype)
 				std::cout << "Failed to send message from client ID: " << ID << " to client ID: " << i << std::endl;
 			}
 		}
-		std::cout << inet_ntop(AF_INET, &ipAddr, str, INET_ADDRSTRLEN) << " said: " << Message << std::endl;
+		//std::cout << inet_ntop(AF_INET, &ipAddr, str, INET_ADDRSTRLEN) << " said: " << Message << std::endl;
 
-		std::cout << "Processed chat message packet from user ID: " << ID << std::endl;
+		//std::cout << "Processed chat message packet from user ID: " << ID << std::endl;
 
 		getMessage = Message;
 		break;

@@ -70,16 +70,15 @@ void Dot::handleEvent(SDL_Event& e)
 {
 	if (isChaser)
 	{
-		//If a key was pressed
 		if (e.type == SDL_KEYDOWN && e.key.repeat == 0)
 		{
 			//Adjust the velocity
 			switch (e.key.keysym.sym)
 			{
-			case SDLK_w: mVelY = -DOT_VEL; break;
-			case SDLK_s: mVelY = DOT_VEL; break;
-			case SDLK_a: mVelX = -DOT_VEL; break;
-			case SDLK_d: mVelX = DOT_VEL; break;
+			case SDLK_UP: mVelY = -DOT_VEL; break;
+			case SDLK_DOWN: mVelY = DOT_VEL; break;
+			case SDLK_LEFT: mVelX = -DOT_VEL; break;
+			case SDLK_RIGHT: mVelX = DOT_VEL; break;
 			}
 		}
 		//If a key was released
@@ -88,10 +87,10 @@ void Dot::handleEvent(SDL_Event& e)
 			//Adjust the velocity
 			switch (e.key.keysym.sym)
 			{
-			case SDLK_w: mVelY = 0; break;
-			case SDLK_s: mVelY = 0; break;
-			case SDLK_a: mVelX = 0; break;
-			case SDLK_d: mVelX = 0; break;
+			case SDLK_UP: mVelY = 0; break;
+			case SDLK_DOWN: mVelY = 0; break;
+			case SDLK_LEFT: mVelX = 0; break;
+			case SDLK_RIGHT: mVelX = 0; break;
 			}
 		}
 	}
@@ -158,8 +157,8 @@ void Dot::render(SDL_Renderer *gRenderer)
 
 std::string Dot::GetPosAsString()
 {
-	std::string data = "X: " + mPosX;
-	std::string dataY = " , Y: " + mPosY;
+	std::string data = "X: " + std::to_string(mPosX);
+	std::string dataY = " , Y: " + std::to_string(mPosY);
 	data = data + dataY;
 	//return string("X: "+to_string(mPosX) + ", " + "Y: " +to_string(mPosY));
 	return data;

@@ -158,8 +158,8 @@ void Dot::render(SDL_Renderer *gRenderer)
 
 std::string Dot::GetPosAsString()
 {
-	std::string data = "X: " + mPosX;
-	std::string dataY = " , Y: " + mPosY;
+	std::string data = "X: " + std::to_string(mPosX);
+	std::string dataY = " , Y: " + std::to_string(mPosY);
 	data = data + dataY;
 	//return string("X: "+to_string(mPosX) + ", " + "Y: " +to_string(mPosY));
 	return data;

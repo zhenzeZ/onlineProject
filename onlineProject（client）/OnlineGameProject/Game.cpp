@@ -15,8 +15,6 @@ Game::Game()
 
 	MyClient = new Client("149.153.106.159", 1111);
 
-	
-
 	if (!MyClient->Connect()) //If client fails to connect...
 	{
 		std::cout << "Failed to connect to server..." << std::endl;
@@ -115,18 +113,6 @@ void Game::update()
 	
 	if (isChaser)
 	{
-		m_playerDot->move(windowHeight, windowWidth);
-		string posData = m_playerDot->GetPosAsString();
-		MyClient->SendString(posData);
-		if (preMessage != MyClient->returnMessage()) {
-			preMessage = MyClient->returnMessage();
-			vector<int> temp = intConverter(preMessage);
-			if (temp.size() == 2) {
-				m_enemyDot->SetPosition(temp[0], temp[1]);
-			}
-		}
-	}
-	else {
 		m_enemyDot->move(windowHeight, windowWidth);
 		string posData = m_enemyDot->GetPosAsString();
 		MyClient->SendString(posData);
@@ -134,8 +120,32 @@ void Game::update()
 			preMessage = MyClient->returnMessage();
 			vector<int> temp = intConverter(preMessage);
 			if (temp.size() == 2) {
-				m_enemyDot->SetPosition(temp[0], temp[1]);
+				cout << temp[0] << temp[1] << endl;
+				m_playerDot->SetPosition(temp[0], temp[1]);
+				if (m_enemyDot->Checkcollision(temp[0], temp[1])) {
+					m_exitGame = true;
+				}
 			}
+
+			
+		}
+	}
+	else {
+		m_playerDot->move(windowHeight, windowWidth);
+		string posData = m_playerDot->GetPosAsString();
+		MyClient->SendString(posData);
+		if (preMessage != MyClient->returnMessage()) {
+			preMessage = MyClient->returnMessage();
+			vector<int> temp = intConverter(preMessage);
+			if (temp.size() == 2) {
+				cout << temp[0] << temp[1] << endl;
+				m_enemyDot->SetPosition(temp[0], temp[1]);
+				if (m_playerDot->Checkcollision(temp[0], temp[1])) {
+					m_exitGame = true;
+				}
+			}
+
+			
 		}
 	}
 

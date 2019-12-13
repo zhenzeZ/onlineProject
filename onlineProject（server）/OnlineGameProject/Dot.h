@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <sstream>  
 #include "SDL.h"
 #include "SDL_image.h"
 #include "LTexture.h"

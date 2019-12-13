@@ -13,18 +13,24 @@ Game::Game()
 
 	int random = rand() % 2;
 
+	//MyServer = &server;
+
 	MyServer = new Server(1111);
 
 	if (random == 0) {
 		isChaser = false;
 		m_playerDot = new Dot(true, m_player);
 		m_enemyDot = new Dot(false, m_enemy);
+		cout << "YOU ARE THE RUNNER" << endl;
 	}
 	else {
 		isChaser = true;
 		m_playerDot = new Dot(false, m_player);
 		m_enemyDot = new Dot(true, m_enemy);
+		cout << "YOU ARE THE CHASER" << endl;
 	}
+
+	MyServer->ListenForNewConnection(isChaser);
 
 	if (IMG_Init(imgFlags) != imgFlags)
 	{
@@ -61,8 +67,11 @@ void Game::run()
 		update();
 		render();
 
-		if ((SDL_GetTicks() - frameTime) < minimumFrameTime)
+		//MyServer->ListenForNewConnection(isChaser);
+
+		if ((SDL_GetTicks() - frameTime) < minimumFrameTime) {
 			SDL_Delay(minimumFrameTime - (SDL_GetTicks() - frameTime));
+		}
 	}
 
 	SDL_DestroyRenderer(m_renderer);
@@ -96,31 +105,38 @@ void Game::processEvents()
 
 void Game::update()
 {
-	MyServer->ListenForNewConnection(isChaser);
 
 	if (isChaser)
 	{
-		m_playerDot->move(windowHeight, windowWidth);
-		string posData = m_playerDot->GetPosAsString();
-		MyServer->SendString(0, posData);
+		m_enemyDot->move(windowHeight, windowWidth);
+		string posData = m_enemyDot->GetPosAsString();
+		MyServer->SendString(0,posData);
 		if (preMessage != MyServer->returnMessage()) {
 			preMessage = MyServer->returnMessage();
 			vector<int> temp = intConverter(preMessage);
 			if (temp.size() == 2) {
-				m_enemyDot->SetPosition(temp[0], temp[1]);
+				m_playerDot->SetPosition(temp[0], temp[1]);
+				if (m_enemyDot->Checkcollision(temp[0], temp[1])) {
+					m_exitGame = true;
+				}
 			}
+			
 		}
 	}
 	else {
-		m_enemyDot->move(windowHeight, windowWidth);
-		string posData = m_enemyDot->GetPosAsString();
-		MyServer->SendString(0, posData);
+		m_playerDot->move(windowHeight, windowWidth);
+		string posData = m_playerDot->GetPosAsString();
+		MyServer->SendString(0,posData);
 		if (preMessage != MyServer->returnMessage()) {
 			preMessage = MyServer->returnMessage();
 			vector<int> temp = intConverter(preMessage);
 			if (temp.size() == 2) {
 				m_enemyDot->SetPosition(temp[0], temp[1]);
+				if (m_playerDot->Checkcollision(temp[0], temp[1])) {
+					m_exitGame = true;
+				}
 			}
+			
 		}
 	}
 

@@ -20,7 +20,9 @@ public:
 
 	bool SendString(int ID, std::string& _string);
 
-	std::string returnMessage() { return getMessage; }
+	std::string returnMessage() { 
+		return getMessage; 
+	}
 
 private:
 	bool sendall(int ID, char * data, int totalbytes);
